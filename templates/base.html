@@ -1,0 +1,40 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'ads/css/ads_styles.css' %}">
+    <link rel="stylesheet" href="{% static 'users/css/users_styles.css' %}">
+    <link rel="icon" href="{% static 'img/logo.png' %}">
+    <title>{% block title %}Обменник{% endblock %}</title>
+</head>
+<body>
+<header class="header">
+    <a href="{% url 'home' %}" class="logo"></a>
+    <nav class="nav">
+        {% if user.is_authenticated %}
+        <span class="username">{{user.username}}</span>
+        <form action="{% url 'users:logout' %}" method="post" class="logout-form">
+            {% csrf_token %}
+            <button type="submit" class="btn">Выйти</button>
+        </form>
+        {% else %}
+        <a href="{% url 'users:login' %}" class="btn">Войти</a> | <a href="{% url 'users:register' %}" class="btn">Регистрация</a>
+        {% endif %}
+    </nav>
+</header>
+
+<div class="container">
+    {% block filters %}
+    {% endblock %}
+    <main class="content">
+        {% block content %}
+        {% endblock %}
+    </main>
+</div>
+
+
+</body>
+</html>
