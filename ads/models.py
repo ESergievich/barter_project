@@ -19,7 +19,7 @@ class Ad(models.Model):
     search_vector = SearchVectorField(null=True)
 
     def get_absolute_url(self):
-        return reverse('ad_detail', kwargs={'pk': self.pk})
+        return reverse('ads:ad_detail', kwargs={'pk': self.pk})
 
     def __str__(self):
         return self.title
