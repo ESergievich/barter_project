@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="error-page">
+  <h1>Упс! Страница не найдена 😢</h1>
+  <a href="{% url 'home' %}" class="btn">На главную</a>
+</div>
+{% endblock %}
