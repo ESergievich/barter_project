@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'ads',
     'users',
+    'django.contrib.postgres'
 ]
 
 MIDDLEWARE = [
