@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Список объявлений{% endblock %}
+
+{% block filters %}
+<aside class="sidebar">
+    <h2>Фильтры</h2>
+
+    <form method="get" action="{% url 'ads:ad_list' %}" class="filters">
+        <input type="text" name="q" placeholder="Поиск..." value="{{ q }}">
+
+        <label>Категория:</label>
+        <select name="category">
+            <option value="">Все категории</option>
+            {% for cat in categories %}
+            <option value="{{ cat.value }}" {% if category == cat.value %}selected{% endif %}>{{ cat.label }}</option> }}
+            {% endfor %}
+        </select>
+
+        <label>Состояние:</label>
+        <select name="condition">
+            <option value="">Любое состояние</option>
+            {% for cond in conditions %}
+            <option value="{{ cond.value }}" {% if condition == cond.value %}selected{% endif %}>{{ cond.label }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Найти</button>
+    </form>
+</aside>
+{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h1>Предложения</h1>
+    <a href="{% url 'ads:create_ad' %}" class="btn create-btn">Создать предложение</a>
+</div>
+
+<div class="ads-list">
+    {% for ad in ads %}
+    <div class="ad-card">
+        <a href="{% url 'ads:ad_detail' ad.id %}">{{ ad.title }}</a>
+        <div>{{ ad.get_condition_display }} | {{ ad.get_category_display }}</div>
+        <div>{{ ad.description }}</div>
+    </div>
+    {% endfor %}
+</div>
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1{% if q %}&q={{ q }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if condition %}&condition={{ condition }}{% endif %}" class="prev">« Первая</a>
+        <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if condition %}&condition={{ condition }}{% endif %}" class="prev">Предыдущая</a>
+    {% else %}
+        <span class="prev disabled">« Первая</span>
+        <span class="prev disabled">Предыдущая</span>
+    {% endif %}
+
+    {% for num in paginator.page_range %}
+        {% if page_obj.number == num %}
+            <a href="?page={{ num }}{% if q %}&q={{ q }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if condition %}&condition={{ condition }}{% endif %}" class="page-number active">{{ num }}</a>
+		{% elif num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
+            <a href="?page={{ num }}{% if q %}&q={{ q }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if condition %}&condition={{ condition }}{% endif %}" class="page-number">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if condition %}&condition={{ condition }}{% endif %}" class="next">Следующая</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}{% if q %}&q={{ q }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if condition %}&condition={{ condition }}{% endif %}" class="next">Последняя »</a>
+    {% else %}
+        <span class="next disabled">Следующая</span>
+        <span class="next disabled">Последняя »</span>
+    {% endif %}
+</div>
+{% endblock %}
