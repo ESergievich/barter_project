@@ -115,3 +115,102 @@ body {
     min-width: 200px;
     font-size: 16px;
 }
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 0;
+}
+
+.pagination a {
+    text-decoration: none;
+    color: #007bff;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.pagination a:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.pagination .active {
+    background-color: #007bff;
+    color: #fff;
+    border: 1px solid #007bff;
+}
+
+.pagination .prev, .pagination .next {
+    background-color: #f8f9fa;
+    color: #007bff;
+    font-weight: bold;
+}
+
+.pagination .prev:hover, .pagination .next:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.pagination .disabled {
+    pointer-events: none;
+    color: #ccc;
+    background-color: #f8f9fa;
+    border-color: #ddd;
+}
+
+.pagination .disabled:hover {
+    background-color: #f8f9fa;
+    color: #ccc;
+}
+
+.btn-danger {
+    color: #fff;
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-danger:hover {
+    color: #fff;
+    background-color: #bb2d3b;
+    border-color: #b02a37;
+}
+
+.btn-secondary {
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    color: #fff;
+    background-color: #5c636a;
+    border-color: #565e64;
+}
+
+.error-page {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+}
+
+.error-page h1 {
+    font-size: 60px;
+    color: #e74c3c;
+}
+
+.error-page a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.error-page a:hover {
+    text-decoration: underline;
+}
