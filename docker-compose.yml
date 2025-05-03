@@ -21,7 +21,7 @@ services:
       sh -c "sleep 5 &&
              python manage.py migrate &&
              uv sync --frozen --no-install-project --no-dev &&
-             python manage.py runserver 0.0.0.0:8000"
+             python manage.py runserver 0.0.0.0:8000 --insecure"
     container_name: barter_project
     env_file: ".env"
     volumes:
@@ -30,6 +30,10 @@ services:
       - ./manage.py:/app/manage.py
       - ./pyproject.toml:/app/pyproject.toml
       - ./uv.lock:/app/uv.lock
+      - ./users:/app/users
+      - ./templates:/app/templates
+      - ./static:/app/static
+      - ./actions:/app/actions
     ports:
       - "8000:8000"
     depends_on:
