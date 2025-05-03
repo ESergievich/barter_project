@@ -14,5 +14,7 @@
     {% if request.user == ad.user %}
         <a href="{% url 'ads:update_ad' ad.id %}" class="btn">Редактировать</a> |
         <a href="{% url 'ads:delete_ad' ad.id %}" class="btn">Удалить</a>
+    {% else %}
+        <a href="{% url 'ads:proposal_create' ad.id %}" class="btn">Предложить обмен</a>
     {% endif %}
 {% endblock %}
