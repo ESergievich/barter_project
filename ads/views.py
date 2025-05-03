@@ -1,5 +1,8 @@
 from django.contrib.postgres.search import SearchQuery, SearchRank
-from django.db.models import F
+from django.db.models import F, Q
+from django.http import HttpResponseForbidden
+from django.shortcuts import get_object_or_404, redirect
+from django.views import View
 from django.views.generic import (
     ListView, DetailView,
     CreateView, UpdateView, DeleteView
@@ -7,8 +10,9 @@ from django.views.generic import (
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 
-from .models import Ad
-from .utils import CategoryChoices, ConditionChoices
+from .forms import ProposalForm
+from .models import Ad, ExchangeProposal
+from .utils import CategoryChoices, ConditionChoices, ProposalStatusChoices
 
 
 class AdListView(ListView):
@@ -87,3 +91,66 @@ class AdDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         ad = self.get_object()
         return self.request.user == ad.user
+
+
+class ProposalListView(LoginRequiredMixin, ListView):
+    model = ExchangeProposal
+    template_name = 'proposals/proposal_list.html'
+    context_object_name = 'proposals'
+
+    def get_queryset(self):
+        user = self.request.user
+        return super().get_queryset().filter(Q(ad_sender__user=user) | Q(ad_receiver__user=user))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        context['sent'] = ExchangeProposal.objects.filter(ad_sender__user=user)
+        context['received'] = ExchangeProposal.objects.filter(ad_receiver__user=user)
+        return context
+
+
+class ProposalCreateView(LoginRequiredMixin, CreateView):
+    model = ExchangeProposal
+    form_class = ProposalForm
+    template_name = 'proposals/proposal_form.html'
+
+    def form_valid(self, form):
+        ad_receiver = get_object_or_404(Ad, id=self.kwargs['ad_receiver_id'])
+
+        if ad_receiver.user == self.request.user:
+            return HttpResponseForbidden("Нельзя предлагать обмен себе")
+
+        form.instance.ad_receiver = ad_receiver
+        form.instance.ad_sender = form.cleaned_data['ad_sender']
+        form.instance.status = ProposalStatusChoices.PENDING
+        return super().form_valid(form)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def get_success_url(self):
+        return reverse_lazy('ads:proposal_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['ad_receiver_title'] = Ad.objects.get(id=self.kwargs['ad_receiver_id']).title
+        return context
+
+
+class ProposalUpdateStatusView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        proposal = get_object_or_404(ExchangeProposal, pk=pk)
+
+        if proposal.ad_sender.user != request.user:
+            return HttpResponseForbidden("Нельзя менять статус чужого предложения")
+        if proposal.status != ProposalStatusChoices.PENDING:
+            return HttpResponseForbidden("Статус уже изменен")
+
+        status = request.POST.get('status')
+        if status in ['accepted', 'rejected']:
+            proposal.status = status
+            proposal.save()
+        return redirect('ads:proposal_list')
