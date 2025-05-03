@@ -17,6 +17,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.shortcuts import redirect
+from django.urls import path, include
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
+
+from config import settings
 
 
 def home(request):
@@ -24,8 +32,12 @@ def home(request):
 
 
 urlpatterns = [
+    path('api/v1/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/v1/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/v1/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     path('admin/', admin.site.urls),
     path('users/', include('users.urls', namespace="users")),
     path('', home, name='home'),
     path('ads/', include('ads.urls', namespace="ads")),
+    path('api/v1/', include('ads.api_urls')),
 ]
