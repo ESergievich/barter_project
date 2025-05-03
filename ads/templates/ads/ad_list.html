@@ -31,7 +31,11 @@
 
 {% block content %}
 <div class="content-header">
-    <h1>Предложения</h1>
+    {% if me %}
+    <h1>Список моих объявлений</h1>
+    {% else %}
+    <h1>Список объявлений</h1>
+    {% endif %}
     <a href="{% url 'ads:create_ad' %}" class="btn create-btn">Создать предложение</a>
 </div>
 

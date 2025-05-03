@@ -12,6 +12,7 @@ from .utils import CategoryChoices, ConditionChoices
 
 
 class AdListView(ListView):
+    me = False
     model = Ad
     template_name = 'ads/ad_list.html'
     context_object_name = 'ads'
@@ -23,7 +24,10 @@ class AdListView(ListView):
     }
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        if self.me:
+            queryset = super().get_queryset().filter(user=self.request.user)
+        else:
+            queryset = super().get_queryset()
         query = self.request.GET.get('q')
         category = self.request.GET.get('category')
         condition = self.request.GET.get('condition')
@@ -44,6 +48,7 @@ class AdListView(ListView):
         context['q'] = self.request.GET.get('q', '')
         context['category'] = self.request.GET.get('category', '')
         context['condition'] = self.request.GET.get('condition', '')
+        context['me'] = self.me
 
         return context
 
