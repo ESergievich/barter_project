@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 
@@ -39,10 +38,6 @@ class ExchangeProposal(models.Model):
     status = models.CharField(max_length=30, choices=ProposalStatusChoices.choices,
                               default=ProposalStatusChoices.PENDING)
     created_at = models.DateTimeField(auto_now_add=True)
-
-    def clean(self):
-        if self.ad_sender == self.ad_receiver:
-            raise ValidationError("Нельзя обмениваться товарами с самим собой.")
 
     def __str__(self):
         return f"{self.ad_sender} → {self.ad_receiver} ({self.status})"
