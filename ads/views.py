@@ -144,8 +144,8 @@ class ProposalUpdateStatusView(LoginRequiredMixin, View):
     def post(self, request, pk):
         proposal = get_object_or_404(ExchangeProposal, pk=pk)
 
-        if proposal.ad_sender.user != request.user:
-            return HttpResponseForbidden("Нельзя менять статус чужого предложения")
+        if request.user not in [proposal.ad_receiver.user, proposal.ad_sender.user]:
+            return HttpResponseForbidden("Вы не можете изменять статус этого предложения")
         if proposal.status != ProposalStatusChoices.PENDING:
             return HttpResponseForbidden("Статус уже изменен")
 
